@@ -181,21 +181,18 @@ public partial class AdManager : MonoSingletonGlobal<AdManager>
 
     private void Start()
     {
-        DOVirtual.DelayedCall(5.0f, () =>
-        {
-            TaskRunner.EnqueueTask(() => Manager.Instance.CompleteAd());
-        });
+        DOVirtual.DelayedCall(5.0f, () => Concurrency.EnqueueTask(() => Manager.Instance.CompletePromisseAd()));
     }
 
     public void ShowInterstitialFreeAd(Action action_1, Action action_2)
     {
-        TaskRunner.EnqueueTask(action_1);
-        TaskRunner.EnqueueTask(action_2);
+        Concurrency.EnqueueTask(action_1);
+        Concurrency.EnqueueTask(action_2);
     }
 
     public void ShowInterstitialOutSpaceTime(Action action)
     {
-        TaskRunner.EnqueueTask(action);
+        Concurrency.EnqueueTask(action);
     }
 
     public void ShowRewardedAd(UnityAction CALLBACK) { CALLBACK?.Invoke(); }

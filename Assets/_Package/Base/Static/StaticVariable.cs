@@ -133,11 +133,11 @@ public static class StaticVariable
         return color;
     }
 
-    // --- Safe active toggles via TaskRunner (kept as original behavior) ---
-    public static void Show(this GameObject obj) { TaskRunner.EnqueueTask(() => obj.SetActive(true)); }
-    public static void Hide(this GameObject obj) { TaskRunner.EnqueueTask(() => obj.SetActive(false)); }
-    public static void Show(this Transform obj) { TaskRunner.EnqueueTask(() => obj.gameObject.SetActive(true)); }
-    public static void Hide(this Transform obj) { TaskRunner.EnqueueTask(() => obj.gameObject.SetActive(false)); }
+    // --- Safe active toggles via Concurrency (kept as original behavior) ---
+    public static void Show(this GameObject obj) { Concurrency.EnqueueTask(() => obj.SetActive(true)); }
+    public static void Hide(this GameObject obj) { Concurrency.EnqueueTask(() => obj.SetActive(false)); }
+    public static void Show(this Transform obj) { Concurrency.EnqueueTask(() => obj.gameObject.SetActive(true)); }
+    public static void Hide(this Transform obj) { Concurrency.EnqueueTask(() => obj.gameObject.SetActive(false)); }
     public static void SetActive(this Transform obj, bool active) { if (active) obj.Show(); else obj.Hide(); }
 
     /// <summary>
