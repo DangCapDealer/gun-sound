@@ -10,7 +10,7 @@ public enum Scene
 }
 
 [DefaultExecutionOrder(-10)]
-public class Manager : MonoSingletonGlobal<Manager>
+public class Manager : SingletonGlobal<Manager>
 {
     [Header("Sdk State")]
     public bool IsFirebase = false;

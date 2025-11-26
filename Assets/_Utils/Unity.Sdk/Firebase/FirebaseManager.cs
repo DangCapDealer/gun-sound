@@ -10,7 +10,7 @@ using Firebase.Analytics;
 #endif
 
 [DefaultExecutionOrder(-9)]
-public class FirebaseManager : MonoSingletonGlobal<FirebaseManager>
+public class FirebaseManager : SingletonGlobal<FirebaseManager>
 {
 #if FIREBASE
     public bool IsInitialized = false;

@@ -4,20 +4,10 @@ using UnityEngine;
 
 namespace Pathfinding
 {
-    public class GraphManager : MonoSingleton<GraphManager>
+    public class GraphManager : Singleton<GraphManager>
     {
         public List<PointNode> points;
         public float connectionDistance = 5f;
-
-        [System.Serializable]
-        public class CustomDirection
-        {
-            public PoolName ObjectID;
-            public string ObjectName;
-            public PointNode Node;
-        }
-
-        public CustomDirection[] customDirections;
 
         public PointNode GetNearestNode(Transform obj)
         {

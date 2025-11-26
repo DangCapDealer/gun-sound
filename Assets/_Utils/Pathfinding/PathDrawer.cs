@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Pathfinding
 {
-    public class PathDrawer : MonoSingleton<PathDrawer>
+    public class PathDrawer : Singleton<PathDrawer>
     {
         public bool IsDraw = false;
         public LineRenderer lineRenderer;

@@ -31,6 +31,6 @@ public class MenuEditor
         RuntimeStorageData.DeleteData(RuntimeStorageData.DATATYPE.PLAYER);
         RuntimeStorageData.DeleteData(RuntimeStorageData.DATATYPE.SOUND);
         PlayerPrefs.DeleteAll();
-        RuntimeStorageData.DeletaData();
+        RuntimeStorageData.DeleteAllData();
     }
 }

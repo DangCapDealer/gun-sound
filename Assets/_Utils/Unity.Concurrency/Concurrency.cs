@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Concurrency : MonoSingletonGlobal<Concurrency>
+public class Concurrency : SingletonGlobal<Concurrency>
 {
     private static readonly Queue<Action> _taskQueue = new();
     private static bool _quitting = false;

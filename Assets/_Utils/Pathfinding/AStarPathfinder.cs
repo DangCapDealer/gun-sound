@@ -5,7 +5,7 @@ using EditorCools;
 
 namespace Pathfinding
 {
-    public class AStarPathfinder : MonoSingleton<AStarPathfinder>
+    public class AStarPathfinder : Singleton<AStarPathfinder>
     {
         [Header("Testing")]
         public PointNode startNode;

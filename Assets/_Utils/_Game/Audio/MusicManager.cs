@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MusicManager : MonoSingletonGlobal<MusicManager>
+public class MusicManager : SingletonGlobal<MusicManager>
 {
     public enum Music
     {

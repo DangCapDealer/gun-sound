@@ -1,7 +1,7 @@
 using MoreMountains.NiceVibrations;
 using UnityEngine;
 
-public class VibrateManager : MonoSingleton<VibrateManager>
+public class VibrateManager : Singleton<VibrateManager>
 {
     public bool IsVibrate = false;
 

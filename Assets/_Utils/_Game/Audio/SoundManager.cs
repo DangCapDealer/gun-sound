@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class SoundManager : MonoSingletonGlobal<SoundManager>
+public class SoundManager : SingletonGlobal<SoundManager>
 {
     public enum Sound
     {

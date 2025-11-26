@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public class RaycastSystem : MonoSingleton<RaycastSystem>
+public class RaycastSystem : Singleton<RaycastSystem>
 {
     public enum RaycastState { None, Running }
     public RaycastState state = RaycastState.None;

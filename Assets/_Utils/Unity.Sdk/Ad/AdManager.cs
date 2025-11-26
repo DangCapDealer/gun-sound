@@ -10,7 +10,7 @@ using GoogleMobileAds.Api;
 #endif
 
 [DefaultExecutionOrder(-5)]
-public partial class AdManager : MonoSingletonGlobal<AdManager>
+public partial class AdManager : SingletonGlobal<AdManager>
 {
 #if ADMOB
     [Header("SETTING")]
