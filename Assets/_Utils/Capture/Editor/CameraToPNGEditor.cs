@@ -8,10 +8,10 @@ public class CameraToPNGEditor : EditorWindow
     int width = 512;
     int height = 512;
 
-    [MenuItem("Tools/Camera To PNG")]
+    [MenuItem("Capture/Editor")]
     public static void ShowWindow()
     {
-        GetWindow<CameraToPNGEditor>("Camera To PNG");
+        GetWindow<CameraToPNGEditor>("Capture");
     }
 
     void OnGUI()
@@ -54,13 +54,17 @@ public class CameraToPNGEditor : EditorWindow
         // Encode PNG
         byte[] bytes = screenShot.EncodeToPNG();
 
-        // Save
-        string path = EditorUtility.SaveFilePanel("Save PNG", "", "camera_capture.png", "png");
-        if (!string.IsNullOrEmpty(path))
-        {
-            File.WriteAllBytes(path, bytes);
-            AssetDatabase.Refresh();
-            Debug.Log($"Saved PNG to: {path}");
-        }
+        // Đường dẫn mặc định tới folder Capture trong Assets
+        string folder = Application.dataPath + "/Capture";
+        if (!Directory.Exists(folder))
+            Directory.CreateDirectory(folder);
+
+        // Tạo tên file duy nhất theo thời gian
+        string fileName = $"camera_capture_{System.DateTime.Now:yyyyMMdd_HHmmss}.png";
+        string path = Path.Combine(folder, fileName);
+
+        File.WriteAllBytes(path, bytes);
+        AssetDatabase.Refresh();
+        Debug.Log($"Saved PNG to: {path}");
     }
 }

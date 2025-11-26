@@ -10,15 +10,15 @@ public class AStarPathFinderObjectMenu : EditorWindow
 
     private Vector2 scrollPos;
 
-    [MenuItem("Tools/AStar Object Menu")]
+    [MenuItem("Pathfinding/Editor")]
     public static void ShowWindow()
     {
-        GetWindow<AStarPathFinderObjectMenu>("AStar Object Menu");
+        GetWindow<AStarPathFinderObjectMenu>("Pathfinding");
     }
 
     private void OnGUI()
     {
-        GUILayout.Label("AStarObject Connector Menu", EditorStyles.boldLabel);
+        GUILayout.Label("Pathfinding Connector:", EditorStyles.boldLabel);
         GameObject[] selectedObjects = Selection.gameObjects;
 
         if(selectedObjects.Length >= 2)
