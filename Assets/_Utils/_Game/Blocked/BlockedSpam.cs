@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
-public class AntiSpamClick : MonoBehaviour
+public class BlockedSpam : MonoBehaviour
 {
     private Button button;
     public float time = 0.5f;

@@ -24,4 +24,13 @@ public class MenuEditor
         OpenGameScene();
         Debug.Log("Active Scene is '" + scene.name + "'.");
     }
+
+    [MenuItem("Tools/Deletes/ALL DATA")]
+    public static void DeleteAllData()
+    {
+        RuntimeStorageData.DeleteData(RuntimeStorageData.DATATYPE.PLAYER);
+        RuntimeStorageData.DeleteData(RuntimeStorageData.DATATYPE.SOUND);
+        PlayerPrefs.DeleteAll();
+        RuntimeStorageData.DeletaData();
+    }
 }
