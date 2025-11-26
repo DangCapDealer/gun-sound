@@ -1,0 +1,55 @@
+using UnityEngine;
+#if ADMOB
+using GoogleMobileAds.Api;
+#endif
+
+public partial class AdManager
+{
+#if ADMOB
+    [Header("AD BANNER")]
+    public bool IsPreloadBanner = true;
+    public AdState BannerAdState = AdState.NotAvailable;
+    public int _bannerReloadCount = 0;
+    public string _adUnitBannerId = "";
+    private BannerView bannerAd;
+
+    public bool IsBanner = false;
+    private float TimeBanner = 0;
+
+    private void CaculaterCounterBannerAd()
+    {
+        if (Time.time - TimeBanner > 15)
+        {
+            TimeBanner = Time.time;
+            BannerAdState = AdState.NotAvailable;
+        }
+    }
+
+    private void LoadBannerAd()
+    {
+        if (RuntimeStorageData.CanLoadAd() == false) return;
+        if (BannerAdState == AdState.Loading) return;
+        BannerAdState = AdState.Loading;
+
+        if (bannerAd != null) { bannerAd.Destroy(); bannerAd = null; }
+
+        AdSize adaptiveSize = AdSize.GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(AdSize.FullWidth);
+        bannerAd = new BannerView(_adUnitBannerId, adaptiveSize, AdPosition.Bottom);
+        bannerAd.LoadAd(new AdRequest());
+
+        if (IsBanner) ShowBanner(); else HideBanner();
+
+        bannerAd.OnBannerAdLoaded += () => { BannerAdState = AdState.Ready; };
+        bannerAd.OnBannerAdLoadFailed += (LoadAdError error) => { BannerAdState = AdState.NotAvailable; };
+        bannerAd.OnAdClicked += () => { BannerAdState = AdState.NotAvailable; };
+        bannerAd.OnAdPaid += (AdValue adValue) =>
+        {
+            FirebaseManager.Instance.TRACKING_ADS_EVENT("paid_ads_banner", "value", (adValue.Value / (double)1000000).ToString());
+            AppflyerEventSender.Instance.logAdRevenue(adValue);
+        };
+    }
+
+    public void ShowBanner() { IsBanner = true; bannerAd?.Show(); }
+    public void HideBanner() { IsBanner = false; bannerAd?.Hide(); }
+#endif
+}
