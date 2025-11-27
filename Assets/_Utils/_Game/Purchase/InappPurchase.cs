@@ -21,19 +21,12 @@ public class InappPurchase : SingletonNonMono<InappPurchase>
 #endif
 
     [Header("DEBUG"), SerializeField] private bool logDebug = false;
-    private int lastClickTime = 0;
-
-    private void Start()
-    {
-        Log("[InappPurchase] Initializing");
-#if IAPPURCHASE_ENABLE
-        if (storeController == null) InitializePurchasing();
-#endif
-    }
+    private int lastPurchaseAttemptTimestamp = 0;
 
     public void InitializePurchasing()
     {
 #if IAPPURCHASE_ENABLE
+        if (storeController == null) InitializePurchasing();
         if (IsInitialized()) return;
         var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
         foreach (var p in Products)
@@ -78,9 +71,9 @@ public class InappPurchase : SingletonNonMono<InappPurchase>
     private bool AntiSpamClick()
     {
         int now = UtilsTimerHelper.CurrentTimeInSeconds();
-        if (now - lastClickTime > 1)
+        if (now - lastPurchaseAttemptTimestamp > 1)
         {
-            lastClickTime = now;
+            lastPurchaseAttemptTimestamp = now;
             return false;
         }
         return true;
