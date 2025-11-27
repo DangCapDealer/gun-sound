@@ -6,20 +6,20 @@ using UnityEngine;
 using UnityEngine.Purchasing;
 #endif
 
-public class InappPurchase : Singleton<InappPurchase>
+public class InappPurchase : SingletonNonMono<InappPurchase>
 #if IAPPURCHASE_ENABLE
     , IDetailedStoreListener
 #endif
 {
-    public event Action<bool> OnPurchaseComplete;
-    public List<InappProduct> Products;
+    public InappProductList ProductList; // Kéo ScriptableObject vào đây qua Inspector hoặc Resources.Load
+
+    public List<InappProduct> Products => ProductList != null ? ProductList.Products : new List<InappProduct>();
 
 #if IAPPURCHASE_ENABLE
     private static IStoreController storeController;
     private static IExtensionProvider storeExtensionProvider;
 #endif
 
-    private string currentProductId;
     [Header("DEBUG"), SerializeField] private bool logDebug = false;
     private int lastClickTime = 0;
 
@@ -207,6 +207,12 @@ public class InappPurchase : Singleton<InappPurchase>
 #endif
 }
 
+[CreateAssetMenu(fileName = "InappProductList", menuName = "IAP/InappProductList")]
+public class InappProductList : ScriptableObject
+{
+    public List<InappProduct> Products;
+}
+
 [Serializable]
 public class InappProduct
 {
@@ -215,6 +221,6 @@ public class InappProduct
     public string ProductName;
     public string ProductPrice;
 #if IAPPURCHASE_ENABLE
-    public ProductType Type;
+    public UnityEngine.Purchasing.ProductType Type;
 #endif
 }

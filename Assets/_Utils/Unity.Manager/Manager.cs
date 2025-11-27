@@ -15,6 +15,7 @@ public class Manager : SingletonGlobal<Manager>
     [Header("Sdk State")]
     public bool IsFirebaseInitialized = false;
     public bool IsAdvertisementReady = false;
+    public bool IsInAppPurchaseInitialized = false;
 
     [Header("Loading State")]
     public bool IsLoadingActive = false;
