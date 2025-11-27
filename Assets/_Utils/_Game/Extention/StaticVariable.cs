@@ -104,19 +104,6 @@ public static class StaticVariable
         return scaled.ToString("F1", System.Globalization.CultureInfo.InvariantCulture) + suffixes[index];
     }
 
-
-    /// <summary>
-    /// Round a Vector3 to N digits after decimal.
-    /// </summary>
-    public static Vector3 Round(this Vector3 originalVector, int digits)
-    {
-        float m = Mathf.Pow(10f, digits);
-        originalVector = originalVector.WithX(Mathf.Round(originalVector.x * m) / m);
-        originalVector = originalVector.WithY(Mathf.Round(originalVector.y * m) / m);
-        originalVector = originalVector.WithZ(Mathf.Round(originalVector.z * m) / m);
-        return originalVector;
-    }
-
     public static Quaternion ToRotation(this Vector3 eulerAngles) => Quaternion.Euler(eulerAngles);
     public static Vector3 ToEulerAngles(this Quaternion quaternion) => quaternion.eulerAngles;
 
@@ -546,4 +533,58 @@ public static class StaticVariable
         Application.OpenURL(url);
 #endif
     }
+
+    // Clamp value trong khoảng [min, max]
+    public static float Clamp(this float value, float min, float max) => Mathf.Clamp(value, min, max);
+    public static int Clamp(this int value, int min, int max) => Mathf.Clamp(value, min, max);
+
+    // Remap giá trị từ [a,b] sang [c,d]
+    public static float Remap(this float value, float from1, float to1, float from2, float to2)
+        => (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+
+    // Lerp 2 giá trị
+    public static float Lerp(this float a, float b, float t) => Mathf.Lerp(a, b, t);
+
+    // Kiểm tra null hoặc đã bị destroy (cho GameObject/Component)
+    public static bool IsNullOrDestroyed(this UnityEngine.Object obj) => obj == null;
+
+    // SafeInvoke cho event/delegate
+    public static void SafeInvoke(this Action action) { if (action != null) action(); }
+    public static void SafeInvoke<T>(this Action<T> action, T arg) { if (action != null) action(arg); }
+
+    // Extension cho RectTransform: SetAnchor, SetPivot, SetSize
+    public static void SetAnchor(this RectTransform rt, Vector2 min, Vector2 max)
+    {
+        rt.anchorMin = min;
+        rt.anchorMax = max;
+    }
+    public static void SetPivot(this RectTransform rt, Vector2 pivot) => rt.pivot = pivot;
+    public static void SetSize(this RectTransform rt, Vector2 size)
+    {
+        var oldSize = rt.rect.size;
+        var deltaSize = size - oldSize;
+        rt.offsetMin -= new Vector2(deltaSize.x * rt.pivot.x, deltaSize.y * rt.pivot.y);
+        rt.offsetMax += new Vector2(deltaSize.x * (1 - rt.pivot.x), deltaSize.y * (1 - rt.pivot.y));
+    }
+
+    // Extension cho List: RandomElement, RemoveNulls
+    public static T RandomElement<T>(this IList<T> list)
+        => list.Count == 0 ? default : list[UnityEngine.Random.Range(0, list.Count)];
+    public static void RemoveNulls<T>(this List<T> list) where T : class
+        => list.RemoveAll(item => item == null);
+
+    // Extension cho string: ToTitleCase
+    public static string ToTitleCase(this string str)
+        => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str.ToLower());
+
+    // Extension cho Color: ToHex
+    public static string ToHex(this Color color)
+        => ColorUtility.ToHtmlStringRGBA(color);
+
+    // Extension cho Vector3: To2D
+    public static Vector2 To2D(this Vector3 v) => new Vector2(v.x, v.y);
+
+    public static Vector2 WithX(this Vector2 v, float x) { v.x = x; return v; } // Đúng
+    public static Vector2 WithY(this Vector2 v, float y) { v.y = y; return v; } // Đúng
+    public static Vector2 AddY(this Vector2 v, float y) { v.y += y; return v; } // Đúng
 }

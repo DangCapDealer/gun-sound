@@ -9,9 +9,9 @@ public class LoadingCanvas : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Image progress;
 
-    public void Show(Action callback, float startValue = 0f, float endValue = 1f, float fillTime = 1f)
+    public void Show(Action CALLBACK_PROGRESS_COMPLETE, float startValue = 0f, float endValue = 1f, float fillTime = 1f)
     {
-        progress.fillAmount = startValue;
+        if (progress != null) progress.fillAmount = startValue;
         transform.Show();
         canvasGroup.transform.Show();
 
@@ -20,7 +20,7 @@ public class LoadingCanvas : MonoBehaviour
         canvasGroup
             .DOFade(1f, 0.2f)
             .SetUpdate(true)
-            .OnComplete(() => FillImageWithDOTween(callback, startValue, endValue, fillTime));
+            .OnComplete(() => FillImageWithDOTween(CALLBACK_PROGRESS_COMPLETE, startValue, endValue, fillTime));
     }
 
     public void Hide(float delay = 1.0f)
@@ -33,21 +33,20 @@ public class LoadingCanvas : MonoBehaviour
             .OnComplete(() => canvasGroup.transform.Hide());
     }
 
-    public void FillImageWithDOTween(Action callback, float startValue = 0f, float endValue = 1f, float fillTime = 1f)
+    private void FillImageWithDOTween(Action CALLBACK_PROGRESS_COMPLETE, float startValue = 0f, float endValue = 1f, float fillTime = 1f)
     {
         if (progress == null)
         {
-            Debug.LogError("Progress Image không được gán!");
-            callback?.Invoke();
-            return;
+            DOVirtual.DelayedCall(fillTime, () => CALLBACK_PROGRESS_COMPLETE?.Invoke());
         }
-
-        progress.fillAmount = startValue;
-        progress.DOKill();
-        progress
-            .DOFillAmount(endValue, fillTime)
-            .SetEase(Ease.Linear)
-            .SetUpdate(true)
-            .OnComplete(() => callback?.Invoke());
+        else
+        {
+            progress.DOKill();
+            progress
+                .DOFillAmount(endValue, fillTime)
+                .SetEase(Ease.Linear)
+                .SetUpdate(true)
+                .OnComplete(() => CALLBACK_PROGRESS_COMPLETE?.Invoke());
+        }
     }
 }

@@ -1,41 +1,33 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.Networking;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using UnityEngine;
-using UnityEngine.Networking;
 
-public class ImageHandler : Singleton<ImageHandler>
+public class ImageHandler : SingletonNonMono<ImageHandler>
 {
-    public void downloadImage(string url, string fileName)
-    {
-        StartCoroutine(GetTextureRequest(url, fileName));
-    }
-
-    IEnumerator GetTextureRequest(string url, string fileName)
+    public async Task DownloadImageAsync(string url, string fileName)
     {
         using (var www = UnityWebRequestTexture.GetTexture(url))
         {
-            yield return www.SendWebRequest();
+            var op = www.SendWebRequest();
+            while (!op.isDone)
+                await Task.Yield();
 
-            if (www.isNetworkError || www.isHttpError)
+            if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.Log(www.error);
             }
             else
             {
-                if (www.isDone)
-                {
-                    var texture = DownloadHandlerTexture.GetContent(www);
-                    byte[] itemBGBytes = texture.EncodeToPNG();
-                    File.WriteAllBytes(Application.dataPath + $"/{fileName}", itemBGBytes);
+                var texture = DownloadHandlerTexture.GetContent(www);
+                byte[] itemBGBytes = texture.EncodeToPNG();
+                File.WriteAllBytes(Application.dataPath + $"/{fileName}", itemBGBytes);
 #if UNITY_EDITOR
-                    AssetDatabase.Refresh();
+                AssetDatabase.Refresh();
 #endif
-                }
             }
         }
     }

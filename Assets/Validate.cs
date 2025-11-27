@@ -1,16 +1,21 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Validate : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+            Vibrate.I.PlayHapticPulse(0.5f, 0.5f);
+
+        if (Keyboard.current.numpad1Key.wasPressedThisFrame)
+        {
+            var prefab = Pooling.I.GetPrefab("Triangle");
+        }
+
+        if (Keyboard.current.numpad0Key.wasPressedThisFrame)
+        {
+            
+        }
     }
 }

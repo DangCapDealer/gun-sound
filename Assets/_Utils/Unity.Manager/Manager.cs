@@ -13,19 +13,24 @@ public enum Scene
 public class Manager : SingletonGlobal<Manager>
 {
     [Header("Sdk State")]
-    public bool IsFirebase = false;
-    public bool IsAd = false;
-    public bool IsLoading = false;
+    public bool IsFirebaseInitialized = false;
+    public bool IsAdvertisementReady = false;
+
+    [Header("Loading State")]
+    public bool IsLoadingActive = false;
+    public bool AutoHideLoadingAfterTimeout = true;
+
+    public float LoadingTimeout = 15f;
+    public float LoadingTimer = 0f;
 
     [Header("References")]
     [SerializeField] private LoadingCanvas loadingCanvas;
 
-    private bool isCompleteAdCallback = false;
-    public event Action CompleteAdCallback;
-
+    private bool hasAdCallbackCompleted = false;
+    public event Action OnAdCallbackCompleted;
 
     [Header("Application State")]
-    public int NumberOfPause = 0;
+    public int PauseCount = 0;
 
     protected override void Awake()
     {
@@ -34,10 +39,10 @@ public class Manager : SingletonGlobal<Manager>
         base.Awake();
 
         RuntimeStorageData.LoadAllData();
-        if (RuntimeStorageData.Player.LastDayLogin != DateTime.Now.Day)
+        if (RuntimeStorageData.Player.LastLoginDay != DateTime.Now.Day)
         {
-            RuntimeStorageData.Player.LastDayLogin = DateTime.Now.Day;
-            RuntimeStorageData.Player.NumberOfDay += 1;
+            RuntimeStorageData.Player.LastLoginDay = DateTime.Now.Day;
+            RuntimeStorageData.Player.TotalLoginDays += 1;
         }
     }
 
@@ -47,15 +52,27 @@ public class Manager : SingletonGlobal<Manager>
         ShowLoading();
     }
 
+    private void Update()
+    {
+        if (IsLoadingActive && AutoHideLoadingAfterTimeout)
+        {
+            LoadingTimer += Time.unscaledDeltaTime;
+            if (LoadingTimer >= LoadingTimeout)
+            {
+                HideLoading(0.0f);
+            }
+        }
+    }
+
     private void ShowLoading()
     {
-        IsLoading = true;
+        IsLoadingActive = true;
         loadingCanvas.Show(null, 0.0f, 0.9f);
     }
 
     public void HideLoading(float delay = 1.0f)
     {
-        IsLoading = false;
+        IsLoadingActive = false;
         loadingCanvas.Hide(delay);
     }
 
@@ -63,17 +80,17 @@ public class Manager : SingletonGlobal<Manager>
 
     public void CompletePromisseAd()
     {
-        if (isCompleteAdCallback) return;
-        isCompleteAdCallback = true;
+        if (hasAdCallbackCompleted) return;
+        hasAdCallbackCompleted = true;
         HideLoading(0.0f);
-        CompleteAdCallback?.Invoke();
+        OnAdCallbackCompleted?.Invoke();
     }
 
     private void OnApplicationPause(bool pause)
     {
         RuntimeStorageData.SaveAllData();
-        NumberOfPause++;
-        if (NumberOfPause <= 2) return;
+        PauseCount++;
+        if (PauseCount <= 2) return;
         if (!pause)
             AdManager.Instance.CheckingOpenAd();
     }

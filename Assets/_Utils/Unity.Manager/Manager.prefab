@@ -45,11 +45,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0513c3bab8575ad40851befe7d4d909d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsFirebase: 0
-  IsAd: 0
-  IsLoading: 0
-  loadingCanvas: {fileID: 0}
-  NumberOfPause: 0
+  IsFirebaseInitialized: 0
+  IsAdvertisementReady: 0
+  IsLoadingActive: 0
+  AutoHideLoadingAfterTimeout: 1
+  LoadingTimeout: 5
+  LoadingTimer: 0
+  loadingCanvas: {fileID: 6609785348613455331}
+  PauseCount: 0
 --- !u!1 &3977181263697738829
 GameObject:
   m_ObjectHideFlags: 0

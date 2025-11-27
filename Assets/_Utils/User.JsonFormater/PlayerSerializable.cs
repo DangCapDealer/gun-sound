@@ -5,41 +5,41 @@ using UnityEngine;
 [Serializable]
 public class PlayerSerializable
 {
-    public string Id;
-    public bool IsAds;
-    public int Gold;
-    public string Language;
-    public List<string> Packages;
-    public int LastDayLogin;
-    public int NumberOfDay;
-    public bool IsFirstOpen;
-    public int Level;
-    public PlayerSerializableExtention Extension;
+    public string PlayerId;
+    public bool IsAdsRemoved;
+    public int GoldAmount;
+    public string PreferredLanguage;
+    public List<string> OwnedPackages;
+    public int LastLoginDay;
+    public int TotalLoginDays;
+    public bool IsFirstLaunch;
+    public int CurrentLevel;
+    public PlayerSerializableExtention ExtensionData;
 
     public PlayerSerializable()
     {
-        Id = SystemInfo.deviceUniqueIdentifier;
-        Gold = 0;
-        Language = "English";
-        Packages = new List<string>();
-        LastDayLogin = 0;
-        NumberOfDay = 0;
-        IsFirstOpen = false;
-        Level = 0;
-        IsAds = false;
-        Extension = new PlayerSerializableExtention();
+        PlayerId = SystemInfo.deviceUniqueIdentifier;
+        GoldAmount = 0;
+        PreferredLanguage = "English";
+        OwnedPackages = new List<string>();
+        LastLoginDay = 0;
+        TotalLoginDays = 0;
+        IsFirstLaunch = false;
+        CurrentLevel = 0;
+        IsAdsRemoved = false;
+        ExtensionData = new PlayerSerializableExtention();
     }
 
-    public bool CanLoadAd() =>
-        Packages == null || !Packages.Contains(Config.REMOVE_AD_ID);
+    public bool CanShowAds() =>
+        OwnedPackages == null || !OwnedPackages.Contains(Config.REMOVE_AD_ID);
 
-    public bool IsProductId(string productId) =>
-        Packages != null && Packages.Contains(productId);
+    public bool HasProduct(string productId) =>
+        OwnedPackages != null && OwnedPackages.Contains(productId);
 
-    public void AddProductId(string productId)
+    public void AddProduct(string productId)
     {
-        if (Packages != null && !Packages.Contains(productId))
-            Packages.Add(productId);
+        if (OwnedPackages != null && !OwnedPackages.Contains(productId))
+            OwnedPackages.Add(productId);
     }
 }
 

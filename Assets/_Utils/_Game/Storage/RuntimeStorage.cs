@@ -65,10 +65,10 @@ public static class RuntimeStorageData
         LogSystem.LogSuccess("Save all data in game");
     }
 
-    public static bool CanLoadAd()
+    public static bool CanShowAds()
     {
         if (Player == null) return true;
-        return Player.CanLoadAd();
+        return Player.CanShowAds();
     }
 
     public static T ReadData<T>(DATATYPE dataType) where T : class, new()

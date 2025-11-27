@@ -2,259 +2,114 @@
 
 public static class VectorExtensions
 {
-    public static Vector3 Create(float _number)
+    // Tạo vector nhanh
+    public static Vector3 Create(float value) => new Vector3(value, value, value);
+    public static Vector2 Create2D(float x = 0, float y = 0) => new Vector2(x, y);
+    public static Vector3 Create3D(float x = 0, float y = 0, float z = 0) => new Vector3(x, y, z);
+
+    // Extension cho Vector2/3: Set, Add, Clamp, Remap, Magnitude
+    public static Vector2 WithX(this Vector2 v, float x) { v.x = x; return v; }
+    public static Vector2 WithY(this Vector2 v, float y) { v.y = y; return v; }
+    public static Vector2 AddY(this Vector2 v, float y) { v.y += y; return v; }
+    public static Vector2 WithXY(this Vector2 v, float x, float y) { v.x = x; v.y = y; return v; }
+    public static Vector2 To2D(this Vector3 v) => new Vector2(v.x, v.y);
+    public static Vector3 To3D(this Vector2 v, float z = 0) => new Vector3(v.x, v.y, z);
+    public static bool IsZero(this Vector3 v) => v == Vector3.zero;
+    public static bool IsZero(this Vector2 v) => v == Vector2.zero;
+    public static bool IsNearlyEqual(this Vector3 v, Vector3 other, float epsilon = 0.001f) => (v - other).sqrMagnitude < epsilon * epsilon;
+    public static float DistanceTo(this Vector3 v, Vector3 other) => Vector3.Distance(v, other);
+    public static float DistanceTo(this Vector2 v, Vector2 other) => Vector2.Distance(v, other);
+    public static Vector3 ClampMagnitude(this Vector3 v, float max) => Vector3.ClampMagnitude(v, max);
+    public static Vector2 ClampMagnitude(this Vector2 v, float max) => Vector2.ClampMagnitude(v, max);
+    public static Vector3 WithMagnitude(this Vector3 v, float mag) => v.normalized * mag;
+    public static Vector2 WithMagnitude(this Vector2 v, float mag) => v.normalized * mag;
+    public static Vector3 Remap(this Vector3 v, float from1, float to1, float from2, float to2)
+        => new Vector3(
+            Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.x)),
+            Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.y)),
+            Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.z))
+        );
+    public static Vector2 Remap(this Vector2 v, float from1, float to1, float from2, float to2)
+        => new Vector2(
+            Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.x)),
+            Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.y))
+        );
+
+    // Random tiện dụng
+    public static float RandomWithin(this Vector2 v) => Random.Range(Mathf.Min(v.x, v.y), Mathf.Max(v.x, v.y));
+    public static int RandomWithin(this Vector2Int v) => Random.Range(Mathf.Min(v.x, v.y), Mathf.Max(v.x, v.y));
+    public static Vector3 RandomInsideUnitCircleXZ(float radius = 1f)
     {
-        return Create3D(_number, _number, _number);
+        var v = Random.insideUnitCircle * radius;
+        return new Vector3(v.x, 0, v.y);
     }
 
-    public static Vector2 CreateX(float x = 0)
-    {
-        return Vector2.zero.WithX(0);
-    }
+    // Project, Rotate
+    public static Vector3 ProjectOnPlane(this Vector3 v, Vector3 planeNormal)
+        => Vector3.ProjectOnPlane(v, planeNormal);
+    public static Vector3 RotateAroundY(this Vector3 v, float angle)
+        => Quaternion.Euler(0, angle, 0) * v;
 
-    public static Vector2 CreateY(float y = 0)
-    {
-        return Vector2.zero.WithY(0);
-    }
+    // Clamp giá trị trong Vector2 như min/max
+    public static float Clamp(this Vector2 v, float val) => Mathf.Clamp(val, Mathf.Min(v.x, v.y), Mathf.Max(v.x, v.y));
+    public static float Lerp(this Vector2Int v, float t) => Mathf.Lerp(v.x, v.y, t);
 
-    public static Vector2 Create2D(float x = 0, float y = 0)
+    // Nearest point trên vector
+    public static Vector2 GetNearestPointToVector(this Vector2 vec, Vector2 point, out float distance, out bool endNearest)
     {
-        return Vector2.zero.WithX(x).WithY(y);
-    }
-
-    public static Vector3 Create3D(float x = 0, float y = 0, float z = 0)
-    {
-        return Vector3.zero.WithX(x).WithY(y).WithZ(z);
-    }
-
-    public static Vector3 RandomY(this Vector3 vec, float defaultRange, float range)
-    {
-        vec.y = defaultRange + Random.Range(-range, range);
-        return vec;
-    }
-
-    public static Quaternion WithY(this Quaternion currentRotation, float y)
-    {
-        Vector3 eulerRotation = currentRotation.eulerAngles;
-        eulerRotation.y = y;
-        return Quaternion.Euler(eulerRotation);
-    }
-
-    public static Quaternion WithZ(this Quaternion currentRotation, float z)
-    {
-        Vector3 eulerRotation = currentRotation.eulerAngles;
-        eulerRotation.z = z;
-        return Quaternion.Euler(eulerRotation);
-    }
-
-    public static Quaternion WithX(this Quaternion currentRotation, float x)
-    {
-        Vector3 eulerRotation = currentRotation.eulerAngles;
-        eulerRotation.x = x;
-        return Quaternion.Euler(eulerRotation);
-    }
-
-    public static Quaternion AddX(this Quaternion currentRotation, float x)
-    {
-        Vector3 eulerRotation = currentRotation.eulerAngles;
-        eulerRotation.x += x;
-        return Quaternion.Euler(eulerRotation);
-    }
-
-    public static Quaternion Add(this Quaternion currentRotation, Vector3 _offset)
-    {
-        Vector3 eulerRotation = currentRotation.eulerAngles;
-        eulerRotation.x += _offset.x;
-        eulerRotation.y += _offset.y;
-        eulerRotation.z += _offset.z;
-        return Quaternion.Euler(eulerRotation);
-    }
-
-    public static Quaternion AddY(this Quaternion currentRotation, float y)
-    {
-        Vector3 eulerRotation = currentRotation.eulerAngles;
-        eulerRotation.y += y;
-        return Quaternion.Euler(eulerRotation);
-    }
-
-    public static Quaternion AddZ(this Quaternion currentRotation, float z)
-    {
-        Vector3 eulerRotation = currentRotation.eulerAngles;
-        eulerRotation.z += z;
-        return Quaternion.Euler(eulerRotation);
-    }
-
-    public static Quaternion ClampZ(this Quaternion currentRotation, Vector2 direction, float minz, float maxz)
-    {
-        Vector3 eulerRotation = currentRotation.eulerAngles;
-        Debug.Log(direction);
-        //eulerRotation.z = Mathf.Clamp(eulerRotation.z, minz, maxz);
-        return Quaternion.Euler(eulerRotation);
-    }
-
-    public static Vector3 ScaleRate(this Vector3 vec, float scale)
-    {
-        vec *= scale;
-        return vec;
-    }
-
-    public static Vector3 ScaleValue(this Vector3 vec, float scale)
-    {
-        vec = Vector3.one * scale;
-        return vec;
-    }
-
-    public static Vector3 WithX(this Vector3 vec, float x)
-    {
-        vec.x = x;
-        return vec;
-    }
-    
-    public static Vector3 WithY(this Vector3 vec, float y)
-    {
-        vec.y = y;
-        return vec;
-    }
-
-    public static Vector3 AddY(this Vector3 vec, float y)
-    {
-        vec.y += y;
-        return vec;
-    }
-
-    public static Vector3 WithZ(this Vector3 vec, float z)
-    {
-        vec.z = z;
-        return vec;
-    }
-
-    public static Vector2 WithX(this Vector2 vec, float x)
-    {
-        vec.x = x;
-        return vec;
-    }
-
-    public static Vector2 WithY(this Vector2 vec, float y)
-    {
-        vec.y = y;
-        return vec;
-    }
-
-    public static Vector2 AddY(this Vector2 vec, float y)
-    {
-        vec.y += y;
-        return vec;
-    }
-
-    public static Vector3 WithXY(this Vector3 vec, float x,float y)
-    {
-        vec.x = x;
-        vec.y = y;
-        return vec;
-    }
-
-    public static Vector3 WithXZ(this Vector3 vec, float x,float z)
-    {
-        vec.x = x;
-        vec.z = z;
-        return vec;
-    }
-
-    public static Vector3 WithYZ(this Vector3 vec, float y,float z)
-    {
-        vec.y = y;
-        vec.z = z;
-        return vec;
-    }
-
-    public static Vector3 AddX(this Vector3 vec, float x)
-    {
-        vec.x += x;
-        return vec;
-    }
-
-    public static Vector3 AddZ(this Vector3 vec, float z)
-    {
-        vec.z += z;
-        return vec;
-    }
-
-    public static Vector2 GetNearestPointToVector(this Vector2 vec,Vector2 point)
-    {
-        return vec.GetNearestPointToVector(point, out var distance, out var endNearest);
-    }
-
-    public static Vector2 GetNearestPointToVector(this Vector2 vec, Vector2 point, out float distance)
-    {
-       return vec.GetNearestPointToVector(point, out distance, out var endNearest);
-    }
-
-    public static Vector2 GetNearestPointToVector(this Vector2 vec,Vector2 point,out float distance,out bool endNearest)
-    {
-        if (Vector2.Angle(vec,point)>=90)
+        if (Vector2.Angle(vec, point) >= 90)
         {
             distance = point.magnitude;
             endNearest = true;
             return Vector2.zero;
         }
-
         if (Vector2.Angle((point - vec), -vec) >= 90)
         {
             distance = (point - vec).magnitude;
             endNearest = true;
             return vec;
         }
-
         endNearest = false;
-        distance = Mathf.Sin(Vector2.Angle(vec, point) * Mathf.Deg2Rad)*point.magnitude;
-        return point.magnitude * Mathf.Cos(Vector2.Angle(vec, point) * Mathf.Deg2Rad)  * vec.normalized;
+        distance = Mathf.Sin(Vector2.Angle(vec, point) * Mathf.Deg2Rad) * point.magnitude;
+        return point.magnitude * Mathf.Cos(Vector2.Angle(vec, point) * Mathf.Deg2Rad) * vec.normalized;
     }
 
-    public static Vector2 ToXZ(this Vector3 vec)
+    // Box/Circle distance
+    public static float BoxDistance(Vector2 a, Vector2 b)
+        => Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
+    public static float CircleDistance(Vector2 a, Vector2 b)
+        => Vector2.Distance(a, b);
+
+    // Quaternion extensions
+    public static Quaternion WithX(this Quaternion q, float x)
     {
-        return new Vector2(vec.x,vec.z);
+        var e = q.eulerAngles; e.x = x; return Quaternion.Euler(e);
     }
-
-    // ReSharper disable once InconsistentNaming
-    public static Vector3 ToXZtoXYZ(this Vector2 vec,float? y=null)
+    public static Quaternion WithY(this Quaternion q, float y)
     {
-        return new Vector3(vec.x, y ?? 0, vec.y);
+        var e = q.eulerAngles; e.y = y; return Quaternion.Euler(e);
     }
-
-    public static float RandomWithIn(this Vector2 vec)
+    public static Quaternion WithZ(this Quaternion q, float z)
     {
-        return Random.Range(vec.x<vec.y? vec.x : vec.y, vec.x<vec.y? vec.y:vec.x);
+        var e = q.eulerAngles; e.z = z; return Quaternion.Euler(e);
     }
-
-    public static int RandomWithIn(this Vector2Int vec)
+    public static Quaternion Add(this Quaternion q, Vector3 offset)
     {
-        return Random.Range(vec.x<vec.y? vec.x : vec.y, vec.x<vec.y? vec.y:vec.x);
+        var e = q.eulerAngles;
+        e.x += offset.x; e.y += offset.y; e.z += offset.z;
+        return Quaternion.Euler(e);
     }
-
-    public static float Lerp(this Vector2Int vec,float t) => Mathf.Lerp(vec.x, vec.y, t);
-
-    public static float Clamp(this Vector2 vec, float val)
+    public static Quaternion AddX(this Quaternion q, float x)
     {
-        return Mathf.Clamp(val, vec.x, vec.y);
+        var e = q.eulerAngles; e.x += x; return Quaternion.Euler(e);
     }
-
-    public static Vector2 Vector(float x, float y)
+    public static Quaternion AddY(this Quaternion q, float y)
     {
-        return Vector3.zero.WithXY(x, y);
+        var e = q.eulerAngles; e.y += y; return Quaternion.Euler(e);
     }
-
-    public static float BoxDistance(Vector2 center, Vector2 target)
+    public static Quaternion AddZ(this Quaternion q, float z)
     {
-        var distanceX = Mathf.Abs(center.x - target.x);
-        var distanceY = Mathf.Abs(center.y - target.y);
-
-        var maxValue = Mathf.Max(distanceX, distanceY);
-        return maxValue;
-    }
-
-    public static float CricleDistance(Vector2 center, Vector2 target)
-    {
-        return Vector2.Distance(center, target);
+        var e = q.eulerAngles; e.z += z; return Quaternion.Euler(e);
     }
 }
 
@@ -262,9 +117,11 @@ public static class PrimitiveExtensions
 {
     public static int FloorTo(this int value, int digit)
     {
-        var pow = (int)Mathf.Pow(10,digit);
+        var pow = (int)Mathf.Pow(10, digit);
         return (value / pow) * pow;
     }
+    // Clamp tiện cho int
+    public static int Clamp(this int value, int min, int max) => Mathf.Clamp(value, min, max);
 }
 
 public static class ColorExtensions
@@ -274,4 +131,6 @@ public static class ColorExtensions
         color.a = a;
         return color;
     }
+    public static string ToHex(this Color color)
+        => ColorUtility.ToHtmlStringRGBA(color);
 }

@@ -6,108 +6,116 @@ using UnityEngine.InputSystem;
 public class RaycastSystem : Singleton<RaycastSystem>
 {
     public enum RaycastState { None, Running }
+
     [Header("Raycast Settings")]
-    public RaycastState state = RaycastState.None;
-    public LayerMask IgnoreLayer;
-    public LayerMask OutlineLayer;
+    public RaycastState CurrentRaycastState = RaycastState.None;
+    public LayerMask IgnoreRaycastLayer;
+    public LayerMask OutlineRaycastLayer;
+
     [Header("Raycast Camera")]
     public Camera RaycastCamera;
 
-    private readonly List<IRaycastEventsListener> listeners = new();
+    private readonly List<IRaycastEventsListener> _eventListeners = new();
 
     void Update()
     {
-        if (IsBlocking() || IsClickingUI()) return;
+        if (IsRaycastBlocked() || IsPointerOverUI()) return;
 
         if (StaticVariable.GameState == GameState.Pause)
         {
-            RaycastCheckingOnPauseState();
+            HandleRaycastWhilePaused();
             return;
         }
-        RaycastChecking();
+        HandleRaycast();
     }
 
-    private void RaycastCheckingOnPauseState()
+    private void HandleRaycastWhilePaused()
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            state = RaycastState.Running;
+            CurrentRaycastState = RaycastState.Running;
             Ray ray = RaycastCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (Physics.Raycast(ray, out RaycastHit hit, 1000f, ~IgnoreLayer))
+            if (Physics.Raycast(ray, out RaycastHit hit, 1000f, ~IgnoreRaycastLayer))
             {
-                foreach (var l in listeners) l.OnRaycastBeganPauseState(hit.collider.transform);
+                foreach (var listener in _eventListeners)
+                    listener.OnRaycastBeganPauseState(hit.collider.transform);
             }
         }
-        if (Mouse.current.leftButton.isPressed && state == RaycastState.Running)
+        if (Mouse.current.leftButton.isPressed && CurrentRaycastState == RaycastState.Running)
         {
-            foreach (var l in listeners) l.OnRaycastMovePauseState(Mouse.current.position.ReadValue());
+            foreach (var listener in _eventListeners)
+                listener.OnRaycastMovePauseState(Mouse.current.position.ReadValue());
         }
 
-        if (Mouse.current.leftButton.wasReleasedThisFrame && state == RaycastState.Running)
+        if (Mouse.current.leftButton.wasReleasedThisFrame && CurrentRaycastState == RaycastState.Running)
         {
-            state = RaycastState.None;
-            foreach (var l in listeners) l.OnRaycastEndPauseState(Mouse.current.position.ReadValue());
+            CurrentRaycastState = RaycastState.None;
+            foreach (var listener in _eventListeners)
+                listener.OnRaycastEndPauseState(Mouse.current.position.ReadValue());
         }
     }
 
-    private void RaycastChecking()
+    private void HandleRaycast()
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            state = RaycastState.Running;
+            CurrentRaycastState = RaycastState.Running;
             Ray ray = RaycastCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (Physics.Raycast(ray, out RaycastHit hit, 1000f, ~IgnoreLayer))
+            if (Physics.Raycast(ray, out RaycastHit hit, 1000f, ~IgnoreRaycastLayer))
             {
-                foreach (var l in listeners) l.OnRaycastBegan(hit);
+                foreach (var listener in _eventListeners)
+                    listener.OnRaycastBegan(hit);
             }
-            foreach (var l in listeners) l.OnRaycastBeganPosition(Mouse.current.position.ReadValue());
+            foreach (var listener in _eventListeners)
+                listener.OnRaycastBeganPosition(Mouse.current.position.ReadValue());
         }
-        if (Mouse.current.leftButton.isPressed && state == RaycastState.Running)
+        if (Mouse.current.leftButton.isPressed && CurrentRaycastState == RaycastState.Running)
         {
-            foreach (var l in listeners) l.OnRaycastDrag(Mouse.current.position.ReadValue());
+            foreach (var listener in _eventListeners)
+                listener.OnRaycastDrag(Mouse.current.position.ReadValue());
         }
 
-        if (Mouse.current.leftButton.wasReleasedThisFrame && state == RaycastState.Running)
+        if (Mouse.current.leftButton.wasReleasedThisFrame && CurrentRaycastState == RaycastState.Running)
         {
-            state = RaycastState.None;
-            foreach (var l in listeners) l.OnRaycastEnded(Mouse.current.position.ReadValue());
+            CurrentRaycastState = RaycastState.None;
+            foreach (var listener in _eventListeners)
+                listener.OnRaycastEnded(Mouse.current.position.ReadValue());
         }
     }
 
-    public bool CenterRaycast(out RaycastHit hitInfo, Vector2 mousePosition)
+    public bool CenterRaycast(out RaycastHit hitInfo, Vector2 screenPosition)
     {
         hitInfo = default;
-        if (IsBlocking() || IsClickingUI()) return false;
-        Ray ray = RaycastCamera.ScreenPointToRay(mousePosition);
-        return Physics.Raycast(ray, out hitInfo, 1000f, ~IgnoreLayer);
+        if (IsRaycastBlocked() || IsPointerOverUI()) return false;
+        Ray ray = RaycastCamera.ScreenPointToRay(screenPosition);
+        return Physics.Raycast(ray, out hitInfo, 1000f, ~IgnoreRaycastLayer);
     }
 
-    public bool PerformRaycast(out RaycastHit hitInfo, Vector2 mousePosition)
+    public bool PerformRaycast(out RaycastHit hitInfo, Vector2 screenPosition)
     {
         hitInfo = default;
-        if (IsBlocking() || IsClickingUI()) return false;
-        Ray ray = RaycastCamera.ScreenPointToRay(mousePosition);
-        return Physics.Raycast(ray, out hitInfo, 1000f, ~OutlineLayer);
+        if (IsRaycastBlocked() || IsPointerOverUI()) return false;
+        Ray ray = RaycastCamera.ScreenPointToRay(screenPosition);
+        return Physics.Raycast(ray, out hitInfo, 1000f, ~OutlineRaycastLayer);
     }
 
-    public bool IsClickingUI()
+    public bool IsPointerOverUI()
     {
-        // Kiểm tra khi nhấn chuột
         if (Mouse.current.leftButton.wasPressedThisFrame)
             return EventSystem.current?.currentSelectedGameObject != null;
         return false;
     }
 
-    public bool IsBlocking() => false;
+    public bool IsRaycastBlocked() => false;
 
     public static void RegisterListener(IRaycastEventsListener listener)
     {
-        if (!I.listeners.Contains(listener))
-            I.listeners.Add(listener);
+        if (!I._eventListeners.Contains(listener))
+            I._eventListeners.Add(listener);
     }
 
     public static void UnregisterListener(IRaycastEventsListener listener)
     {
-        I.listeners.Remove(listener);
+        I._eventListeners.Remove(listener);
     }
 }

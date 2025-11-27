@@ -2,27 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pooling
+public class Pooling : SingletonNonMono<Pooling>
 {
-    private static Pooling _instance;
-    public static Pooling I => _instance ??= new Pooling();
-
     private readonly Dictionary<int, List<GameObject>> pools = new();
     private readonly Dictionary<string, GameObject> poolPrefabs = new();
 
-    private Pooling() { }
-
-    public GameObject GetPrefab(string path)
+    public GameObject GetPrefab(string prefabName)
     {
-        if (!poolPrefabs.TryGetValue(path, out var prefab))
+        var prefab = ResourceHandle.I.LoadPrefab(prefabName);
+        if (prefab == null)
         {
-            prefab = Resources.Load<GameObject>(path);
-            if (prefab == null)
-            {
-                Debug.LogError($"PoolByID: Prefab not found at path: {path}");
-                return null;
-            }
-            poolPrefabs[path] = prefab;
+            Debug.LogError($"Pooling: Prefab not found in Resources/Prefabs/{prefabName}");
+            return null;
         }
         return GetPrefab(prefab);
     }
