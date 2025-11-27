@@ -56,4 +56,13 @@ public class ResourceHandle : SingletonNonMono<ResourceHandle>
             Debug.LogWarning($"[ResourceHandle] Không tìm thấy prefab: {prefabName} trong folder Prefabs");
         return prefab;
     }
+
+    public T LoadData<T>(string dataFileName) where T : Object
+    {
+        string path = $"Data/{dataFileName}";
+        var data = Load<T>(path);
+        if (data == null)
+            Debug.LogWarning($"[ResourceHandle] Không tìm thấy data: {dataFileName} trong folder Data (type: {typeof(T).Name})");
+        return data;
+    }
 }

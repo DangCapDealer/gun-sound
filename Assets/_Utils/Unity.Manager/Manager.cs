@@ -49,10 +49,10 @@ public class Manager : SingletonGlobal<Manager>
 
     private void Start()
     {
-        InappPurchase.I.ProductList = Resources.Load<InappProductList>("InappProduct");
+        InappPurchase.I.ProductList = ResourceHandle.I.LoadData<InappProductList>("InappProduct");
         InappPurchase.I.InitializePurchasing();
 
-        
+
         Time.timeScale = 1;
         ShowLoading();
     }
