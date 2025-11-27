@@ -1,15 +1,19 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class RaycastSystem : Singleton<RaycastSystem>
 {
     public enum RaycastState { None, Running }
+    [Header("Raycast Settings")]
     public RaycastState state = RaycastState.None;
     public LayerMask IgnoreLayer;
     public LayerMask OutlineLayer;
     [Header("Raycast Camera")]
     public Camera RaycastCamera;
+
+    private readonly List<IRaycastEventsListener> listeners = new();
 
     void Update()
     {
@@ -30,15 +34,19 @@ public class RaycastSystem : Singleton<RaycastSystem>
             state = RaycastState.Running;
             Ray ray = RaycastCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             if (Physics.Raycast(ray, out RaycastHit hit, 1000f, ~IgnoreLayer))
-                GameEvent.OnTouchBeganPauseStateMethod(hit.collider.transform);
+            {
+                foreach (var l in listeners) l.OnRaycastBeganPauseState(hit.collider.transform);
+            }
         }
         if (Mouse.current.leftButton.isPressed && state == RaycastState.Running)
-            GameEvent.OnTouchMovePauseStateMethod(Mouse.current.position.ReadValue());
+        {
+            foreach (var l in listeners) l.OnRaycastMovePauseState(Mouse.current.position.ReadValue());
+        }
 
         if (Mouse.current.leftButton.wasReleasedThisFrame && state == RaycastState.Running)
         {
             state = RaycastState.None;
-            GameEvent.OnTouchEndPauseStateMethod(Mouse.current.position.ReadValue());
+            foreach (var l in listeners) l.OnRaycastEndPauseState(Mouse.current.position.ReadValue());
         }
     }
 
@@ -47,18 +55,22 @@ public class RaycastSystem : Singleton<RaycastSystem>
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             state = RaycastState.Running;
-            GameEvent.OnTouchBeganMethod(Mouse.current.position.ReadValue());
             Ray ray = RaycastCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             if (Physics.Raycast(ray, out RaycastHit hit, 1000f, ~IgnoreLayer))
-                GameEvent.OnTouchBeganMethod(hit);
+            {
+                foreach (var l in listeners) l.OnRaycastBegan(hit);
+            }
+            foreach (var l in listeners) l.OnRaycastBeganPosition(Mouse.current.position.ReadValue());
         }
         if (Mouse.current.leftButton.isPressed && state == RaycastState.Running)
-            GameEvent.OnTouchDragMethod(Mouse.current.position.ReadValue());
+        {
+            foreach (var l in listeners) l.OnRaycastDrag(Mouse.current.position.ReadValue());
+        }
 
         if (Mouse.current.leftButton.wasReleasedThisFrame && state == RaycastState.Running)
         {
             state = RaycastState.None;
-            GameEvent.OnTouchEndedMethod(Mouse.current.position.ReadValue());
+            foreach (var l in listeners) l.OnRaycastEnded(Mouse.current.position.ReadValue());
         }
     }
 
@@ -87,4 +99,15 @@ public class RaycastSystem : Singleton<RaycastSystem>
     }
 
     public bool IsBlocking() => false;
+
+    public static void RegisterListener(IRaycastEventsListener listener)
+    {
+        if (!I.listeners.Contains(listener))
+            I.listeners.Add(listener);
+    }
+
+    public static void UnregisterListener(IRaycastEventsListener listener)
+    {
+        I.listeners.Remove(listener);
+    }
 }

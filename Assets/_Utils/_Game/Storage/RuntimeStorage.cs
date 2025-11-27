@@ -23,7 +23,6 @@ public static class RuntimeStorageData
     private static string _path = OptimizeComponent.GetStringOptimize(Application.persistentDataPath, "/");
     private static string _dataSound = OptimizeComponent.GetStringOptimize(Application.persistentDataPath, "/", HashLib.GetHashStringAndDeviceID(StaticVariable.DATA_SOUND));
     private static string _dataPlayer = OptimizeComponent.GetStringOptimize(Application.persistentDataPath, "/", HashLib.GetHashStringAndDeviceID(StaticVariable.DATA_PLAYER));
-    private static string _saveFolderPath = Application.persistentDataPath;
 
     public static bool IsReady
     {
@@ -120,7 +119,7 @@ public static class RuntimeStorageData
 
     public static void DeleteAllData()
     {
-        string[] paths = Directory.GetFiles(_saveFolderPath);
+        string[] paths = Directory.GetFiles(_path);
         foreach (var path in paths)
         {
             File.Delete(path);

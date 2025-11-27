@@ -28,3 +28,28 @@ public class ObjectPool<T> where T : Component
         pool.Enqueue(obj);
     }
 }
+
+/*
+-------------------------
+CÁCH SỬ DỤNG ObjectPool<T>
+-------------------------
+
+// 1. Tạo prefab (ví dụ: Bullet) và kéo vào Inspector hoặc load qua Resources
+
+// 2. Khởi tạo pool:
+public ObjectPool<Bullet> bulletPool;
+
+void Start()
+{
+    bulletPool = new ObjectPool<Bullet>(bulletPrefab, 20); // 20 là số lượng khởi tạo
+}
+
+// 3. Lấy object từ pool khi cần:
+Bullet bullet = bulletPool.Get();
+bullet.transform.position = firePosition;
+bullet.Init(...); // nếu có
+
+// 4. Khi không dùng nữa (ví dụ: bullet trúng địch hoặc ra khỏi màn hình), trả về pool:
+bulletPool.Release(bullet);
+
+*/

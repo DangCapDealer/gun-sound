@@ -29,3 +29,36 @@ public static class EventBus
             (del as Action<T>)?.Invoke(evt);
     }
 }
+
+/*
+-------------------------
+CÁCH SỬ DỤNG EventBus
+-------------------------
+
+// 1. Định nghĩa một class event (có thể là struct/class)
+public class PlayerDiedEvent
+{
+    public int playerId;
+    public PlayerDiedEvent(int id) { playerId = id; }
+}
+
+// 2. Đăng ký lắng nghe event ở bất kỳ đâu:
+void OnEnable()
+{
+    EventBus.Subscribe<PlayerDiedEvent>(OnPlayerDied);
+}
+void OnDisable()
+{
+    EventBus.Unsubscribe<PlayerDiedEvent>(OnPlayerDied);
+}
+void OnPlayerDied(PlayerDiedEvent evt)
+{
+    Debug.Log("Player died: " + evt.playerId);
+}
+
+// 3. Gửi event ở bất kỳ đâu:
+EventBus.Publish(new PlayerDiedEvent(123));
+
+// 4. Có thể dùng cho bất kỳ kiểu event nào, không cần reference trực tiếp giữa các script.
+
+*/

@@ -9,15 +9,15 @@ public class PlayerSerializable
     public bool IsAds;
     public int Gold;
     public string Language;
-    public List<string> Packages = new();
+    public List<string> Packages;
     public int LastDayLogin;
     public int NumberOfDay;
     public bool IsFirstOpen;
     public int Level;
+    public PlayerSerializableExtention Extension;
 
     public PlayerSerializable()
     {
-        Debug.Log("Khởi tạo dữ liệu đầu tiên");
         Id = SystemInfo.deviceUniqueIdentifier;
         Gold = 0;
         Language = "English";
@@ -27,6 +27,7 @@ public class PlayerSerializable
         IsFirstOpen = false;
         Level = 0;
         IsAds = false;
+        Extension = new PlayerSerializableExtention();
     }
 
     public bool CanLoadAd() =>
