@@ -2,18 +2,30 @@
 
 public static class VectorExtensions
 {
+    // Cache các mảng dùng cho tween, tránh new[] mỗi lần
+    private static readonly Vector3[] path2 = new Vector3[2];
+    private static readonly Vector3[] path3 = new Vector3[3];
+
     // Tạo vector nhanh
-    public static Vector3 Create(float value) => new Vector3(value, value, value);
-    public static Vector2 Create2D(float x = 0, float y = 0) => new Vector2(x, y);
-    public static Vector3 Create3D(float x = 0, float y = 0, float z = 0) => new Vector3(x, y, z);
+    // private static readonly Vector2 _cache2D = new Vector2(0, 0);
+    private static readonly Vector3 _cache = new Vector3(0, 0, 0);
+    public static Vector3 Create(float value) => _cache.WithX(value).WithY(value).WithZ(value);
+    public static Vector2 Create2D(float x = 0, float y = 0) => _cache.WithX(x).WithY(y);
+    public static Vector3 Create3D(float x = 0, float y = 0, float z = 0) => _cache.WithX(x).WithY(y).WithZ(z);
 
     // Extension cho Vector2/3: Set, Add, Clamp, Remap, Magnitude
     public static Vector2 WithX(this Vector2 v, float x) { v.x = x; return v; }
     public static Vector2 WithY(this Vector2 v, float y) { v.y = y; return v; }
+    public static Vector2 AddX(this Vector2 v, float x) { v.x += x; return v; }
     public static Vector2 AddY(this Vector2 v, float y) { v.y += y; return v; }
-    public static Vector2 WithXY(this Vector2 v, float x, float y) { v.x = x; v.y = y; return v; }
+    public static Vector3 WithX(this Vector3 v, float x) { v.x = x; return v; }
+    public static Vector3 WithY(this Vector3 v, float y) { v.y = y; return v; }
+    public static Vector3 WithZ(this Vector3 v, float z) { v.z = z; return v; }
+    public static Vector3 AddX(this Vector3 v, float x) { v.x += x; return v; }
+    public static Vector3 AddY(this Vector3 v, float y) { v.y += y; return v; }
+    public static Vector3 AddZ(this Vector3 v, float z) { v.z += z; return v; }
     public static Vector2 To2D(this Vector3 v) => new Vector2(v.x, v.y);
-    public static Vector3 To3D(this Vector2 v, float z = 0) => new Vector3(v.x, v.y, z);
+    public static Vector3 To3D(this Vector2 v, float z = 0) => _cache.WithX(v.x).WithY(v.y).WithZ(z);
     public static bool IsZero(this Vector3 v) => v == Vector3.zero;
     public static bool IsZero(this Vector2 v) => v == Vector2.zero;
     public static bool IsNearlyEqual(this Vector3 v, Vector3 other, float epsilon = 0.001f) => (v - other).sqrMagnitude < epsilon * epsilon;
@@ -23,17 +35,14 @@ public static class VectorExtensions
     public static Vector2 ClampMagnitude(this Vector2 v, float max) => Vector2.ClampMagnitude(v, max);
     public static Vector3 WithMagnitude(this Vector3 v, float mag) => v.normalized * mag;
     public static Vector2 WithMagnitude(this Vector2 v, float mag) => v.normalized * mag;
+    private static readonly Vector3 _cacheRemap = new Vector3(0, 0);
     public static Vector3 Remap(this Vector3 v, float from1, float to1, float from2, float to2)
-        => new Vector3(
-            Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.x)),
-            Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.y)),
-            Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.z))
-        );
+        => _cacheRemap.WithX(Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.x)))
+                 .WithY(Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.y)))
+                 .WithZ(Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.z)));
     public static Vector2 Remap(this Vector2 v, float from1, float to1, float from2, float to2)
-        => new Vector2(
-            Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.x)),
-            Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.y))
-        );
+        => _cacheRemap.WithX(Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.x)))
+                 .WithY(Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, v.y)));
 
     // Random tiện dụng
     public static float RandomWithin(this Vector2 v) => Random.Range(Mathf.Min(v.x, v.y), Mathf.Max(v.x, v.y));
@@ -41,7 +50,8 @@ public static class VectorExtensions
     public static Vector3 RandomInsideUnitCircleXZ(float radius = 1f)
     {
         var v = Random.insideUnitCircle * radius;
-        return new Vector3(v.x, 0, v.y);
+        // Tránh new Vector3 mỗi lần, dùng static nếu cần spam
+        return _cache.WithX(v.x).WithY(0).WithZ(v.y);
     }
 
     // Project, Rotate
@@ -55,19 +65,22 @@ public static class VectorExtensions
     public static float Lerp(this Vector2Int v, float t) => Mathf.Lerp(v.x, v.y, t);
 
     // Nearest point trên vector
+    private static readonly Vector2[] nearestPoints = new Vector2[2];
     public static Vector2 GetNearestPointToVector(this Vector2 vec, Vector2 point, out float distance, out bool endNearest)
     {
         if (Vector2.Angle(vec, point) >= 90)
         {
             distance = point.magnitude;
             endNearest = true;
-            return Vector2.zero;
+            nearestPoints[0] = Vector2.zero;
+            return nearestPoints[0];
         }
         if (Vector2.Angle((point - vec), -vec) >= 90)
         {
             distance = (point - vec).magnitude;
             endNearest = true;
-            return vec;
+            nearestPoints[1] = vec;
+            return nearestPoints[1];
         }
         endNearest = false;
         distance = Mathf.Sin(Vector2.Angle(vec, point) * Mathf.Deg2Rad) * point.magnitude;
@@ -110,6 +123,21 @@ public static class VectorExtensions
     public static Quaternion AddZ(this Quaternion q, float z)
     {
         var e = q.eulerAngles; e.z += z; return Quaternion.Euler(e);
+    }
+
+    // Các hàm dùng cho tween có thể dùng path2, path3 để tránh new mảng mỗi lần
+    public static Vector3[] GetPath2(Vector3 a, Vector3 b)
+    {
+        path2[0] = a;
+        path2[1] = b;
+        return path2;
+    }
+    public static Vector3[] GetPath3(Vector3 a, Vector3 b, Vector3 c)
+    {
+        path3[0] = a;
+        path3[1] = b;
+        path3[2] = c;
+        return path3;
     }
 }
 

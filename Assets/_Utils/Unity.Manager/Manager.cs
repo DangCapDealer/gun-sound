@@ -30,9 +30,6 @@ public class Manager : SingletonGlobal<Manager>
     private bool hasAdCallbackCompleted = false;
     public event Action OnAdCallbackCompleted;
 
-    [Header("Application State")]
-    public int PauseCount = 0;
-
     protected override void Awake()
     {
         QualitySettings.vSyncCount = 1;
@@ -94,10 +91,7 @@ public class Manager : SingletonGlobal<Manager>
     private void OnApplicationPause(bool pause)
     {
         RuntimeStorageData.SaveAllData();
-        PauseCount++;
-        if (PauseCount <= 2) return;
-        if (!pause)
-            AdManager.Instance.CheckingOpenAd();
+        if (!pause) AdManager.I.CheckingOpenAd();
     }
 
     private void OnApplicationQuit()

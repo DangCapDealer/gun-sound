@@ -1,7 +1,7 @@
 using MoreMountains.NiceVibrations;
 using UnityEngine;
 
-public class Vibrate : SingletonNonMono<Vibrate>
+public class Vibrate : CSharpSingleton<Vibrate>
 {
     public bool IsVibrationEnabled = false;
 

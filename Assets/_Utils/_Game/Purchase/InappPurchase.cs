@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Purchasing;
 #endif
 
-public class InappPurchase : SingletonNonMono<InappPurchase>
+public class InappPurchase : CSharpSingleton<InappPurchase>
 #if IAPPURCHASE_ENABLE
     , IDetailedStoreListener
 #endif

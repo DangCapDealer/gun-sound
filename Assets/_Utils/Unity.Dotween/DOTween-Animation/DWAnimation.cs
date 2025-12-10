@@ -21,20 +21,23 @@ public class DWAnimation : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(PlayAnimationCorotine());
+        PlayAnimationSequence();
     }
 
-    private IEnumerator PlayAnimationCorotine()
+    private void PlayAnimationSequence()
     {
-        for(int i = 0; i < dWAnimtionTypes.Count; i++)
+        Sequence sequence = DOTween.Sequence();
+
+        for (int i = 0; i < dWAnimtionTypes.Count; i++)
         {
-            bool animationComplete = false;
-            PlayAnimation(dWAnimtionTypes[i], () =>
+            var type = dWAnimtionTypes[i];
+            sequence.AppendCallback(() =>
             {
-                animationComplete = true;
+                PlayAnimation(type, null); // callback không cần nữa, vì sequence sẽ tự nối tiếp
             });
-            yield return new WaitUntil(() => animationComplete);
-            yield return WaitForSecondCache.WAIT_TIME_ZERO_POINT_ONE;
+
+            // Nếu cần delay giữa các animation
+            sequence.AppendInterval(0.1f);
         }
     }
 

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResourceHandle : SingletonNonMono<ResourceHandle>
+public class ResourceHandle : CSharpSingleton<ResourceHandle>
 {
     private readonly Dictionary<string, Object> _cache = new();
 

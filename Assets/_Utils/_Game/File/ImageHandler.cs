@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 using UnityEditor;
 #endif
 
-public class ImageHandler : SingletonNonMono<ImageHandler>
+public class ImageHandler : CSharpSingleton<ImageHandler>
 {
     public async Task DownloadImageAsync(string url, string fileName)
     {

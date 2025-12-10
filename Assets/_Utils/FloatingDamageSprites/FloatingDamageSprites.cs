@@ -2,9 +2,21 @@
 using System.Collections.Generic;
 using EditorCools;
 
+public enum FloatingDamageMoveType
+{
+    MoveUp,         // Bay lên thẳng
+    MoveUpDown,     // Bay lên rồi rơi xuống
+    CurveUp,        // Bay lên theo đường cong
+    CurveDown,      // Bay xuống theo đường cong
+    Shake,          // Rung tại chỗ
+    Custom,         // Tùy chỉnh
+    TossRandom      // Tung lên ngẫu nhiên trái/phải rồi rơi xuống
+}
+
 public class FloatingDamageSprites : MonoBehaviour
 {
     public FloatingDamageInstance damageInstancePrefab;
+    public FloatingDamageMoveType moveType = FloatingDamageMoveType.MoveUp;
     private readonly Queue<FloatingDamageInstance> pool = new();
 
     // Gọi hàm này để hiển thị damage
@@ -24,7 +36,7 @@ public class FloatingDamageSprites : MonoBehaviour
             inst = Instantiate(damageInstancePrefab, transform);
 
         inst.gameObject.SetActive(true);
-        inst.Show(damage, pos, crit, () => {
+        inst.Show(damage, pos, crit, moveType, () => {
             inst.gameObject.SetActive(false);
             pool.Enqueue(inst);
         });

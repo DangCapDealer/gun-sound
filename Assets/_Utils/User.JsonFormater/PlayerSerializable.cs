@@ -14,7 +14,7 @@ public class PlayerSerializable
     public int TotalLoginDays;
     public bool IsFirstLaunch;
     public int CurrentLevel;
-    public PlayerSerializableExtention ExtensionData;
+    public string ExtensionData;
 
     public PlayerSerializable()
     {
@@ -27,7 +27,7 @@ public class PlayerSerializable
         IsFirstLaunch = false;
         CurrentLevel = 0;
         IsAdsRemoved = false;
-        ExtensionData = new PlayerSerializableExtention();
+        ExtensionData = "{}";
     }
 
     public bool CanShowAds() =>

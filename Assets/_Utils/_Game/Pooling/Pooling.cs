@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pooling : SingletonNonMono<Pooling>
+public class Pooling : CSharpSingleton<Pooling>
 {
     private readonly Dictionary<int, List<GameObject>> pools = new();
     private readonly Dictionary<string, GameObject> poolPrefabs = new();

@@ -368,6 +368,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FloatingDamageSprites
       objectReference: {fileID: 0}
+    - target: {fileID: 6559297831378814263, guid: 29b38a6a7e1a13f49931630b98c31d7c, type: 3}
+      propertyPath: moveType
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 9101529596056086294, guid: 29b38a6a7e1a13f49931630b98c31d7c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

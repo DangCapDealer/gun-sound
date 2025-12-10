@@ -68,3 +68,4 @@ MonoBehaviour:
   moveUpDistance: 1
   fadeOutDuration: 0.5
   totalLifetime: 1.5
+  moveType: 0
