@@ -30,6 +30,18 @@ public static class EventBus
     }
 }
 
+public static class EventBusExtensions
+{
+    private static readonly CanvasEvent _canvasEvent = new CanvasEvent();
+    public static CanvasEvent CanvasEvent(this string canvasId)
+    {
+        _canvasEvent.CanvasId = canvasId;
+        return _canvasEvent;
+    }
+}
+
+public class CanvasEvent { public string CanvasId; }
+
 /*
 -------------------------
 CÁCH SỬ DỤNG EventBus

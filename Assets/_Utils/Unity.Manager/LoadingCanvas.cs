@@ -12,8 +12,8 @@ public class LoadingCanvas : MonoBehaviour
     public void Show(Action CALLBACK_PROGRESS_COMPLETE, float startValue = 0f, float endValue = 1f, float fillTime = 1f)
     {
         if (progress != null) progress.fillAmount = startValue;
+        Debug.Log("[LoadingCanvas] Show loading canvas");
         transform.Show();
-        canvasGroup.transform.Show();
 
         canvasGroup.DOKill();
         canvasGroup.alpha = 1f;
@@ -30,7 +30,11 @@ public class LoadingCanvas : MonoBehaviour
             .DOFade(0f, 0.2f)
             .SetUpdate(true)
             .SetDelay(delay)
-            .OnComplete(() => canvasGroup.transform.Hide());
+            .OnComplete(() => 
+            {
+                Debug.Log("[LoadingCanvas] Hide loading canvas completed");
+                transform.Hide();
+            });
     }
 
     private void FillImageWithDOTween(Action CALLBACK_PROGRESS_COMPLETE, float startValue = 0f, float endValue = 1f, float fillTime = 1f)
