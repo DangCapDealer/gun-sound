@@ -12,11 +12,10 @@ using System.Reflection;
 public static class StaticVariable
 {
     public static bool isLoaded = false;
-    public static GameState GameState = GameState.None;
 
     // Persistent keys
     public static readonly string DATA_PLAYER = "player.data";
-    public static readonly string DATA_SOUND = "sound.data";
+    public static readonly string DATA_SETTING = "setting.data";
 
     // Reusable buffer to reduce GC when collecting children
     private static readonly List<Transform> childrenBuffer = new List<Transform>(32);
@@ -106,19 +105,6 @@ public static class StaticVariable
 
     public static Quaternion ToRotation(this Vector3 eulerAngles) => Quaternion.Euler(eulerAngles);
     public static Vector3 ToEulerAngles(this Quaternion quaternion) => quaternion.eulerAngles;
-
-    /// <summary>
-    /// Convert hex (e.g., "66331A") to Color. Returns white on failure.
-    /// </summary>
-    public static Color ToColor(this string hex)
-    {
-        if (!ColorUtility.TryParseHtmlString("#" + hex, out Color color))
-        {
-            Debug.LogError("Invalid hexadecimal color value: " + hex);
-            color = Color.white;
-        }
-        return color;
-    }
 
     // --- Safe active toggles via Concurrency (kept as original behavior) ---
     public static void Show(this GameObject obj) { Concurrency.EnqueueTask(() => obj.SetActive(true)); }
@@ -446,17 +432,6 @@ public static class StaticVariable
         return output.ToString();
     }
 
-    // --- Transform property shortcuts (kept naming for backward compatibility) ---
-    public static Vector3 position(this GameObject _object) => _object.transform.position;
-    public static void position(this GameObject _object, Vector3 _position) => _object.transform.position = _position;
-    public static Quaternion rotation(this GameObject _object) => _object.transform.rotation;
-    public static void rotation(this GameObject _object, Quaternion _rot) => _object.transform.rotation = _rot;
-    public static Vector3 scale(this GameObject _object) => _object.transform.localScale;
-    public static void scale(this GameObject _object, float s) => _object.transform.localScale = VectorExtensions.Create(s);
-    public static void scale(this GameObject _object, Vector3 s) => _object.transform.localScale = s;
-    public static void parent(this GameObject _object, Transform _parent) => _object.transform.SetParent(_parent);
-    public static GameObject parent(this GameObject _object) => _object.transform.parent != null ? _object.transform.parent.gameObject : null;
-
     /// <summary>
     /// Move along a circle by arc length "distance".
     /// </summary>
@@ -534,10 +509,6 @@ public static class StaticVariable
 #endif
     }
 
-    // Clamp value trong khoảng [min, max]
-    public static float Clamp(this float value, float min, float max) => Mathf.Clamp(value, min, max);
-    public static int Clamp(this int value, int min, int max) => Mathf.Clamp(value, min, max);
-
     // Remap giá trị từ [a,b] sang [c,d]
     public static float Remap(this float value, float from1, float to1, float from2, float to2)
         => (value - from1) / (to1 - from1) * (to2 - from2) + from2;
@@ -577,14 +548,4 @@ public static class StaticVariable
     public static string ToTitleCase(this string str)
         => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str.ToLower());
 
-    // Extension cho Color: ToHex
-    public static string ToHex(this Color color)
-        => ColorUtility.ToHtmlStringRGBA(color);
-
-    // Extension cho Vector3: To2D
-    public static Vector2 To2D(this Vector3 v) => new Vector2(v.x, v.y);
-
-    public static Vector2 WithX(this Vector2 v, float x) { v.x = x; return v; } // Đúng
-    public static Vector2 WithY(this Vector2 v, float y) { v.y = y; return v; } // Đúng
-    public static Vector2 AddY(this Vector2 v, float y) { v.y += y; return v; } // Đúng
 }

@@ -6,7 +6,7 @@ public static class RuntimeStorageData
     public enum DATATYPE
     {
         NULL,
-        SOUND,
+        SETTING,
         PLAYER
     }
 
@@ -17,18 +17,18 @@ public static class RuntimeStorageData
     }
 
     public static StatusGame _StatusGame = RuntimeStorageData.StatusGame.Playing;
-    public static SoundSerializable Sound;
+    public static SettingSerializable Setting;
     public static PlayerSerializable Player;
 
     private static string _path = OptimizeComponent.GetStringOptimize(Application.persistentDataPath, "/");
-    private static string _dataSound = OptimizeComponent.GetStringOptimize(Application.persistentDataPath, "/", HashLib.GetHashStringAndDeviceID(StaticVariable.DATA_SOUND));
+    private static string _dataSetting = OptimizeComponent.GetStringOptimize(Application.persistentDataPath, "/", HashLib.GetHashStringAndDeviceID(StaticVariable.DATA_SETTING));
     private static string _dataPlayer = OptimizeComponent.GetStringOptimize(Application.persistentDataPath, "/", HashLib.GetHashStringAndDeviceID(StaticVariable.DATA_PLAYER));
 
     public static bool IsReady
     {
         get
         {
-            if (Sound == null || Player == null)
+            if (Setting == null || Player == null)
                 return false;
             return true;
         }
@@ -36,14 +36,14 @@ public static class RuntimeStorageData
 
     public static void ReadData()
     {
-        Sound = ReadData<SoundSerializable>(DATATYPE.SOUND) as SoundSerializable;
+        Setting = ReadData<SettingSerializable>(DATATYPE.SETTING) as SettingSerializable;
         Player = ReadData<PlayerSerializable>(DATATYPE.PLAYER) as PlayerSerializable;
         LogSystem.LogSuccess("Load all data in game");
     }
 
     public static void CreateData()
     {
-        Sound = ReadNew<SoundSerializable>(DATATYPE.SOUND) as SoundSerializable;
+        Setting = ReadNew<SettingSerializable>(DATATYPE.SETTING) as SettingSerializable;
         Player = ReadNew<PlayerSerializable>(DATATYPE.PLAYER) as PlayerSerializable;
         LogSystem.LogSuccess("Load all data in game");
     }
@@ -60,7 +60,7 @@ public static class RuntimeStorageData
 
     public static void SaveAllData()
     {
-        SaveData(_dataSound, Sound);
+        SaveData(_dataSetting, Setting);
         SaveData(_dataPlayer, Player);
         LogSystem.LogSuccess("Save all data in game");
     }
@@ -134,9 +134,9 @@ public static class RuntimeStorageData
             Debug.Log($"Khởi tạo data {dataType} mới");
             switch (dataType)
             {
-                case DATATYPE.SOUND:
-                    var soundData = new SoundSerializable();
-                    return soundData as T;
+                case DATATYPE.SETTING:
+                    var settingData = new SettingSerializable();
+                    return settingData as T;
                 case DATATYPE.PLAYER:
                     var playerData = new PlayerSerializable();
                     return playerData as T;
@@ -193,8 +193,8 @@ public static class RuntimeStorageData
 
         switch (dataType)
         {
-            case DATATYPE.SOUND:
-                dataPath = _dataSound;
+            case DATATYPE.SETTING:
+                dataPath = _dataSetting;
                 break;
             case DATATYPE.PLAYER:
                 dataPath = _dataPlayer;

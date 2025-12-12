@@ -57,7 +57,7 @@ public class SoundManager : SingletonGlobal<SoundManager>
             var src = gameObject.AddComponent<AudioSource>();
             src.playOnAwake = false;
             src.loop = false;
-            src.mute = !RuntimeStorageData.Sound.isSound;
+            src.mute = !RuntimeStorageData.Setting.Get("sound", true);
             audioSourcePool.Add(src);
         }
     }
@@ -69,7 +69,7 @@ public class SoundManager : SingletonGlobal<SoundManager>
 
     public void SetMute()
     {
-        bool mute = !RuntimeStorageData.Sound.isSound;
+        bool mute = !RuntimeStorageData.Setting.Get("sound", true);
         foreach (var src in audioSourcePool)
             src.mute = mute;
         if (audioSourceSpecial) audioSourceSpecial.mute = mute;

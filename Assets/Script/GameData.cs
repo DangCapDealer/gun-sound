@@ -11,8 +11,9 @@ using UnityEditor.SceneManagement;
 
 public class GameData : MonoBehaviour
 {
-    [SerializeField] private Sprite[] allOfGuns;
+    
 #if UNITY_EDITOR && EDITOR_LOAD_GUNS
+    [SerializeField] private Sprite[] allOfGuns;
     public GameObject gunItemPrefab;
     public Transform gunItemParent;
 #endif
@@ -32,8 +33,8 @@ public class GameData : MonoBehaviour
     [ContextMenu("Created All Guns")]
     private void CreatedAllGuns()
     {
-        Debug.Log("[GameData] Created All Guns: " + allOfGuns.Length);
 #if UNITY_EDITOR && EDITOR_LOAD_GUNS
+        Debug.Log("[GameData] Created All Guns: " + allOfGuns.Length);
         var lenght = gunItemParent.childCount;
         for (int i = lenght - 1; i >= 0; i--)
         {

@@ -20,12 +20,6 @@ public class RaycastSystem : Singleton<RaycastSystem>
     void Update()
     {
         if (IsRaycastBlocked() || IsPointerOverUI()) return;
-
-        if (StaticVariable.GameState == GameState.Pause)
-        {
-            HandleRaycastWhilePaused();
-            return;
-        }
         HandleRaycast();
     }
 

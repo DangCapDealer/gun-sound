@@ -2,13 +2,6 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
 
-public enum SmartMoveAction
-{
-    None,
-    MoveTo,
-    FadeTo
-}
-
 public class SmartMove : MonoBehaviour
 {
     public float duration = 0.5f;

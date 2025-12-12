@@ -29,7 +29,7 @@ public class MenuEditor
     public static void DeleteAllData()
     {
         RuntimeStorageData.DeleteData(RuntimeStorageData.DATATYPE.PLAYER);
-        RuntimeStorageData.DeleteData(RuntimeStorageData.DATATYPE.SOUND);
+        RuntimeStorageData.DeleteData(RuntimeStorageData.DATATYPE.SETTING);
         PlayerPrefs.DeleteAll();
         RuntimeStorageData.DeleteAllData();
     }

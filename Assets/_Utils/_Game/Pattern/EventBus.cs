@@ -38,9 +38,17 @@ public static class EventBusExtensions
         _canvasEvent.CanvasId = canvasId;
         return _canvasEvent;
     }
+
+    private static readonly PopupEvent _popupEvent = new PopupEvent();
+    public static PopupEvent PopupEvent(this string popupId)
+    {
+        _popupEvent.PopupId = popupId;
+        return _popupEvent;
+    }
 }
 
 public class CanvasEvent { public string CanvasId; }
+public class PopupEvent { public string PopupId; }
 
 /*
 -------------------------

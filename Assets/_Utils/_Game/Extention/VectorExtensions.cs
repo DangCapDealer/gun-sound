@@ -161,4 +161,33 @@ public static class ColorExtensions
     }
     public static string ToHex(this Color color)
         => ColorUtility.ToHtmlStringRGBA(color);
+
+    /// <summary>
+    /// Convert hex (e.g., "66331A") to Color. Returns white on failure.
+    /// </summary>
+    public static Color ToColor(this string hex)
+    {
+        if (!ColorUtility.TryParseHtmlString("#" + hex, out Color color))
+        {
+            Debug.LogError("Invalid hexadecimal color value: " + hex);
+            color = Color.white;
+        }
+        return color;
+    }
+}
+
+// --- Transform property shortcuts (kept naming for backward compatibility) ---
+public static class TransformShortcuts
+{
+    public static Vector3 Position(this GameObject obj) => obj.transform.position;
+    public static void Position(this GameObject obj, Vector3 pos) => obj.transform.position = pos;
+
+    public static Quaternion Rotation(this GameObject obj) => obj.transform.rotation;
+    public static void Rotation(this GameObject obj, Quaternion rot) => obj.transform.rotation = rot;
+    public static Vector3 Scale(this GameObject obj) => obj.transform.localScale;
+    public static void Scale(this GameObject obj, float s) => obj.transform.localScale = VectorExtensions.Create(s);
+    public static void Scale(this GameObject obj, Vector3 s) => obj.transform.localScale = s;
+
+    public static void Parent(this GameObject obj, Transform parent) => obj.transform.SetParent(parent);
+    public static GameObject Parent(this GameObject obj) => obj.transform.parent != null ? obj.transform.parent.gameObject : null;
 }
