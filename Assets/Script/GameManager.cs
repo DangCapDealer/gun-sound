@@ -7,6 +7,6 @@ public class GameManager : Singleton<GameManager>
     public static readonly string SettingId = "setting";
     public void Start()
     {
-        EventBus.Publish(EventBusExtensions.CanvasEvent(GameId));
+        EventBus.Publish(EventBusExtensions.CanvasEvent(HomeId));
     }
 }

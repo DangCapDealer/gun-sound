@@ -11,4 +11,9 @@ public class GameUICanvas : ScreenCanvas
     {
         EventBus.Publish(EventBusExtensions.PopupEvent(GameManager.SettingId));
     }
+
+    public void OnBackgroundPressed(string backgroundId)
+    {
+        EventBus.Publish(BackgroundSystemExtensions.ChooseBackgroudMethod(backgroundId));
+    }
 }

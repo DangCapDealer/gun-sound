@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public static class EventBus
 {
@@ -45,10 +46,38 @@ public static class EventBusExtensions
         _popupEvent.PopupId = popupId;
         return _popupEvent;
     }
+
+    public static TouchBeganEvent _touchBeganEvent = new TouchBeganEvent();
+    public static TouchHoldEvent _touchHoldEvent = new TouchHoldEvent();
+    public static TouchEndedEvent _touchEndedEvent = new TouchEndedEvent();
+
+    public static TouchBeganEvent TouchBeganEvent(this Vector2 position)
+    {
+        _touchBeganEvent.Position = position;
+        return _touchBeganEvent;
+    }
+
+    public static TouchHoldEvent TouchHoldEvent(this Vector2 position)
+    {
+        _touchHoldEvent.Position = position;
+        return _touchHoldEvent;
+    }
+
+    public static TouchEndedEvent TouchEndedEvent(this Vector2 position)
+    {
+        _touchEndedEvent.Position = position;
+        return _touchEndedEvent;
+    }
 }
 
 public class CanvasEvent { public string CanvasId; }
 public class PopupEvent { public string PopupId; }
+
+// Định nghĩa các event
+public class TouchBeganEvent { public Vector2 Position; }
+public class TouchHoldEvent { public Vector2 Position; }
+public class TouchEndedEvent { public Vector2 Position; }
+
 
 /*
 -------------------------

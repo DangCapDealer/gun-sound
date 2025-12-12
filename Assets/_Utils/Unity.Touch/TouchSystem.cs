@@ -27,6 +27,7 @@ public class TouchSystem : MonoBehaviour
             IsHolding = false;
             TouchPosition = Input.mousePosition;
             if (IsDebug) Debug.Log($"[TouchSystem] Mouse Down at {TouchPosition}");
+            EventBus.Publish(EventBusExtensions.TouchBeganEvent(TouchPosition));
         }
         else if (Input.GetMouseButton(0))
         {
@@ -34,6 +35,7 @@ public class TouchSystem : MonoBehaviour
             {
                 IsHolding = true;
                 if (IsDebug) Debug.Log($"[TouchSystem] Mouse Hold at {Input.mousePosition}");
+                EventBus.Publish(EventBusExtensions.TouchHoldEvent(Input.mousePosition));
             }
             TouchPosition = Input.mousePosition;
         }
@@ -41,9 +43,12 @@ public class TouchSystem : MonoBehaviour
         {
             IsTouching = false;
             if (IsHolding)
+            {
                 if (IsDebug) Debug.Log("[TouchSystem] Mouse Hold End");
+            }
             IsHolding = false;
             if (IsDebug) Debug.Log("[TouchSystem] Mouse Up");
+            EventBus.Publish(EventBusExtensions.TouchEndedEvent(Input.mousePosition));
         }
 #elif UNITY_ANDROID || UNITY_IOS
         if (Input.touchCount == 1)
@@ -55,6 +60,7 @@ public class TouchSystem : MonoBehaviour
                 IsHolding = false;
                 TouchPosition = touch.position;
                 if (IsDebug) Debug.Log($"[TouchSystem] Touch Began at {TouchPosition}");
+                EventBus.Publish(EventBusExtensions.TouchBeganEvent(TouchPosition));
             }
             else if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
             {
@@ -62,6 +68,7 @@ public class TouchSystem : MonoBehaviour
                 {
                     IsHolding = true;
                     if (IsDebug) Debug.Log($"[TouchSystem] Touch Hold at {touch.position}");
+                    EventBus.Publish(EventBusExtensions.TouchHoldEvent(touch.position));
                 }
                 TouchPosition = touch.position;
             }
@@ -69,9 +76,12 @@ public class TouchSystem : MonoBehaviour
             {
                 IsTouching = false;
                 if (IsHolding)
+                {
                     if (IsDebug) Debug.Log("[TouchSystem] Touch Hold End");
+                }
                 IsHolding = false;
                 if (IsDebug) Debug.Log("[TouchSystem] Touch Ended");
+                EventBus.Publish(EventBusExtensions.TouchEndedEvent(touch.position));
             }
         }
         else
